@@ -35,7 +35,7 @@
 
     <script>
       let myPets = [];
-      const HOST = "https://pet-owners.onrender.com/pets/";
+      const HOST = "https://pet-owners.onrender.com/pets";
 
       async function addPet() {
         let newPet = {
@@ -44,39 +44,50 @@
           image: newImage.value,
         };
 
-        const response = await axios.post(HOST, newPet);
-        console.log("Pet added successfully");
-        getPets();
+        try {
+          const response = await axios.post(HOST, newPet);
+          console.log("Pet added successfully");
+          getPets();
+        } catch (error) {
+          console.error("Error adding pet:", error);
+        }
       }
 
       async function deletePet(petID) {
-        const response = await axios.delete(`${HOST}/${petID}`);
-        alert("Pet deleted successfully");
-        getPets();
+        try {
+          const response = await axios.delete(`${HOST}/${petID}`);
+          alert("Pet deleted successfully");
+          getPets();
+        } catch (error) {
+          console.error("Error deleting pet:", error);
+        }
       }
 
       async function getPets() {
-        const response = await axios.get(HOST);
-        myPets = response.data;
-        displayPets();
+        try {
+          const response = await axios.get(HOST);
+          myPets = response.data;
+          displayPets();
+        } catch (error) {
+          console.error("Error fetching pets:", error);
+        }
       }
 
       function displayPets() {
         let finalStr = "";
-        for (let id in myPets) {
-          const pet = myPets[id];
+        myPets.forEach((pet) => {
           const petStr = `
           <div class="col">
             <div class="card" style="width: 18rem;">
               <img src="${pet.image}" class="card-img-top" alt="Pet Image">
               <div class="card-body">
                 <h5 class="card-title">${pet.name} - ${pet.age} years old</h5>
-                <button class="btn btn-danger" onclick="deletePet('${id}')">Delete</button>
+                <button class="btn btn-danger" onclick="deletePet('${pet.id}')">Delete</button>
               </div>
             </div>
           </div>`;
           finalStr += petStr;
-        }
+        });
         display.innerHTML = finalStr;
       }
 
